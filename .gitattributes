@@ -1,0 +1,3 @@
+# Keep generated Emscripten glue out of language statistics and code review noise.
+web/engine.js linguist-generated=true
+web/engine.wasm binary linguist-generated=true

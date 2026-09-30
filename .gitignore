@@ -1,0 +1,10 @@
+/build/
+/crystal-cavern
+/crystal-cavern.exe
+/game-tests
+/game-tests.exe
+*.obj
+/web/crystal-cavern-source.zip
+/test-results/
+__pycache__/
+/.venv/

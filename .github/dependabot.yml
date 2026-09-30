@@ -1,0 +1,23 @@
+version: 2
+
+updates:
+  # Workflow actions are pinned to immutable commit SHAs, so Dependabot is what
+  # moves them forward. Each bump arrives as a pull request with the version in
+  # the commit message, and CI verifies it before merge.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+    open-pull-requests-limit: 5
+
+  # The browser suite pins Playwright, which drives the Chromium download. A
+  # bump here is checked by the same browser job before it can merge.
+  - package-ecosystem: "pip"
+    directory: "/tests"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "deps"
+    open-pull-requests-limit: 5

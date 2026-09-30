@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#10191b" />
+    <meta
+      name="description"
+      content="A little light. A long way out. Explore Crystal Cavern, a handcrafted puzzle adventure powered by C++ and WebAssembly. Play free in your browser."
+    />
+    <meta
+      property="og:title"
+      content="Crystal Cavern — A little light. A long way out."
+    />
+    <meta
+      property="og:description"
+      content="Five crystals, fifty moves, and one way out. A tiny browser adventure built with C++ and WebAssembly."
+    />
+    <meta property="og:type" content="website" />
+    <title>Crystal Cavern — A little light. A long way out.</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <svg
+      class="icon-defs"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <symbol id="i-crystal" viewBox="0 0 24 24">
+        <path d="m12 2 7 7-7 13L5 9Z" />
+        <path d="M5 9h14M12 2v20" />
+      </symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24">
+        <path d="M5 12h14m-6-6 6 6-6 6" />
+      </symbol>
+      <symbol id="i-reset" viewBox="0 0 24 24">
+        <path d="M4 10a8 8 0 1 1 1 7M4 4v6h6" />
+      </symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24">
+        <path d="M9 5v14M15 5v14" />
+      </symbol>
+      <symbol id="i-sound" viewBox="0 0 24 24">
+        <path
+          d="m11 5-5 4H3v6h3l5 4ZM15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"
+        />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24">
+        <path d="m6 6 12 12M6 18 18 6" />
+      </symbol>
+      <symbol id="i-code" viewBox="0 0 24 24">
+        <path d="m8 6-6 6 6 6m8-12 6 6-6 6m-3-15-2 18" />
+      </symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24">
+        <path d="M12 20 3 11C-2 3 9-1 12 6c3-7 14-3 9 5Z" />
+      </symbol>
+      <symbol id="i-flame" viewBox="0 0 24 24">
+        <path
+          d="M13 2c1 8 7 8 7 14a8 8 0 0 1-16 0c0-4 2-6 5-9 0 4 2 4 2 4s3-3 2-9Z"
+        />
+      </symbol>
+      <symbol id="i-up" viewBox="0 0 24 24">
+        <path d="M12 20V4m-7 7 7-7 7 7" />
+      </symbol>
+    </svg>
+
+    <div class="page-shell">
+      <header class="site-header">
+        <a
+          class="brand"
+          href="./"
+          aria-label="Crystal Cavern home"
+          translate="no"
+          ><img src="./favicon.svg" alt="" width="34" height="34" /><span
+            >crystal cavern<span class="brand-dot">.</span></span
+          ></a
+        >
+        <nav aria-label="Main navigation">
+          <button class="text-button" data-dialog="help-dialog">
+            How to play <span aria-hidden="true">↗</span>
+          </button>
+          <a class="source-link" href="./crystal-cavern-source.zip" download
+            ><svg class="icon"><use href="#i-code" /></svg
+            ><span>Download source</span></a
+          >
+        </nav>
+      </header>
+
+      <main id="main">
+        <section class="intro" aria-labelledby="game-title">
+          <div>
+            <p class="eyebrow">
+              <span class="status-dot"></span> 5 CRYSTALS, 50 MOVES
+            </p>
+            <h1 id="game-title">
+              A little light.<br /><span>A long way out.</span>
+            </h1>
+          </div>
+          <div class="intro-note">
+            <span class="tiny-label">WELCOME TO CRYSTAL CAVERN</span>
+            <p>
+              You have 50 moves.<br />Collect 5 crystals, then reach the gate
+              in the top-right corner.
+            </p>
+          </div>
+        </section>
+
+        <section class="game-layout" aria-label="Crystal Cavern game">
+          <div class="game-column">
+            <div class="cavern-frame">
+              <div class="map-header">
+                <span
+                  ><span class="tiny-label">01</span
+                  ><span class="header-divider"></span>The forgotten
+                  grotto</span
+                ><span class="live-label"
+                  ><span class="status-dot"></span
+                  ><span id="run-status">READY</span></span
+                >
+              </div>
+              <div class="mobile-hud" aria-hidden="true">
+                <span
+                  ><svg class="icon"><use href="#i-crystal" /></svg
+                  ><span id="mobile-crystals">0 / 5</span></span
+                ><span
+                  ><svg class="icon"><use href="#i-flame" /></svg
+                  ><span id="mobile-torch">50 moves</span></span
+                ><span
+                  ><svg class="icon"><use href="#i-heart" /></svg
+                  ><span id="mobile-health">5 / 5</span></span
+                >
+              </div>
+              <div class="canvas-wrap" id="canvas-wrap">
+                <canvas
+                  id="cavern"
+                  width="960"
+                  height="576"
+                  tabindex="0"
+                  aria-label="Cavern map. Use arrow keys or W A S D to move after starting. Follow your progress in the expedition panel."
+                  aria-describedby="board-description"
+                ></canvas>
+                <p class="sr-only" id="board-description">
+                  A maze of stone corridors contains five crystals, two spike
+                  traps, a healing potion, and an exit in the top right. Your
+                  explorer starts in the top left.
+                </p>
+                <div class="game-overlay" id="game-overlay">
+                  <div class="overlay-card">
+                    <span class="overlay-gem" aria-hidden="true"
+                      ><svg><use href="#i-crystal" /></svg
+                    ></span>
+                    <p class="tiny-label" id="overlay-kicker">
+                      THE WAY IN
+                    </p>
+                    <h2 id="overlay-title">Follow the glow.</h2>
+                    <p id="overlay-description">
+                      5 crystals are hidden in the rock.<br />Find them all,
+                      then take the gate in the top-right corner.
+                    </p>
+                    <div
+                      id="result-stats"
+                      class="result-stats"
+                      role="status"
+                      hidden
+                    ></div>
+                    <button class="primary-button" id="play-button" disabled>
+                      Lighting your torch…
+                      <svg class="icon"><use href="#i-arrow" /></svg>
+                    </button>
+                    <p class="overlay-footnote" id="overlay-footnote">
+                      No rush. Your torch only burns when you move.
+                    </p>
+                  </div>
+                </div>
+                <div
+                  class="pickup-label"
+                  id="pickup-label"
+                  aria-hidden="true"
+                ></div>
+              </div>
+              <div class="map-footer">
+                <div class="keyboard-hint">
+                  <span class="key-group"
+                    ><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></span
+                  ><span>or arrow keys to move</span>
+                </div>
+                <div class="map-actions">
+                  <button
+                    class="icon-button"
+                    id="sound-button"
+                    aria-label="Enable sound"
+                    aria-pressed="false"
+                    title="Enable sound"
+                  >
+                    <svg class="icon"><use href="#i-sound" /></svg
+                    ><span
+                      class="sound-strike"
+                      aria-hidden="true"
+                    ></span></button
+                  ><button
+                    class="icon-button"
+                    id="pause-button"
+                    aria-label="Pause game"
+                    title="Pause (Esc)"
+                    disabled
+                  >
+                    <svg class="icon"><use href="#i-pause" /></svg></button
+                  ><span class="action-divider"></span
+                  ><button class="restart-button" id="restart-button" disabled>
+                    <svg class="icon"><use href="#i-reset" /></svg>Restart
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="touch-controls" aria-label="Touch movement controls">
+              <p>Tap once to step.<br /><span>Hold to keep walking.</span></p>
+              <div class="dpad">
+                <button data-move="w" aria-label="Move up">
+                  <svg class="icon"><use href="#i-up" /></svg></button
+                ><button data-move="a" aria-label="Move left">
+                  <svg class="icon"><use href="#i-up" /></svg></button
+                ><span aria-hidden="true">✧</span
+                ><button data-move="d" aria-label="Move right">
+                  <svg class="icon"><use href="#i-up" /></svg></button
+                ><button data-move="s" aria-label="Move down">
+                  <svg class="icon"><use href="#i-up" /></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="below-map">
+              <span
+                ><span class="small-diamond">◇</span> Walking into a wall costs
+                nothing.</span
+              ><button class="text-button" data-dialog="help-dialog">
+                How the run works <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+          </div>
+
+          <aside class="expedition" aria-label="Expedition status">
+            <div class="panel-heading">
+              <h2>Your expedition</h2>
+              <span class="tiny-label"
+                >RUN <span id="run-number">01</span></span
+              >
+            </div>
+            <section class="crystal-section">
+              <div class="stat-heading">
+                <span>Crystals found</span
+                ><span class="stat-value"
+                  ><span id="crystal-count">0</span
+                  ><span class="stat-denominator"> / 5</span></span
+                >
+              </div>
+              <div
+                class="crystal-slots"
+                id="crystal-slots"
+                aria-label="0 of 5 crystals collected"
+              ></div>
+              <p class="stat-caption" id="objective">
+                Collect all five to awaken the exit.
+              </p>
+            </section>
+            <section class="resource-section">
+              <div class="stat-heading">
+                <span
+                  ><svg class="icon flame-icon"><use href="#i-flame" /></svg
+                  >Torchlight</span
+                ><span class="stat-value" id="torch-count"
+                  >50<span class="stat-unit"> moves</span></span
+                >
+              </div>
+              <div
+                class="torch-track"
+                role="progressbar"
+                id="torch-bar"
+                aria-label="Torch turns remaining"
+                aria-valuemin="0"
+                aria-valuemax="50"
+                aria-valuenow="50"
+              >
+                <span id="torch-fill"></span>
+              </div>
+              <p class="stat-caption">A step forward. A little less light.</p>
+            </section>
+            <section class="resource-section health-section">
+              <div class="stat-heading">
+                <span>Vitality</span
+                ><span class="small-value"
+                  ><span id="health-count">5</span> / 5</span
+                >
+              </div>
+              <div id="hearts" class="hearts" aria-label="5 of 5 health"></div>
+            </section>
+            <section class="journal">
+              <div class="tiny-label">
+                <span class="journal-dot"></span> FIELD NOTES
+              </div>
+              <p id="journal-message" role="status" aria-live="polite">
+                It’s quiet down here. The crystals must be close.
+              </p>
+              <span class="journal-position" id="position-label"
+                >AT THE CAVERN ENTRANCE</span
+              >
+            </section>
+            <div class="best-score">
+              <span>PERSONAL BEST</span><strong id="best-score">—</strong
+              ><span class="best-unit">pts</span>
+            </div>
+          </aside>
+        </section>
+
+        <section class="field-guide" aria-label="Quick field guide">
+          <div class="guide-heading">
+            <span class="tiny-label">IN THE CAVE</span>
+            <h2>What each one <br />does to your run.</h2>
+          </div>
+          <div class="guide-item">
+            <span class="guide-art crystal-art" aria-hidden="true">◆</span>
+            <div>
+              <h3>The crystals</h3>
+              <p>5 in total. The gate opens once you have them all.</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <span class="guide-art spikes-art" aria-hidden="true">▴▴▴</span>
+            <div>
+              <h3>Mind your step</h3>
+              <p>Spikes take 2 hearts. They stay where they are.</p>
+            </div>
+          </div>
+          <div class="guide-item">
+            <span class="guide-art potion-art" aria-hidden="true"
+              ><span></span
+            ></span>
+            <div>
+              <h3>A second chance</h3>
+              <p>1 potion that restores 3 hearts, gone once you drink it.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>Runs entirely in your browser. No account and no tracking.</span
+        ><button class="text-button" data-dialog="about-dialog">
+          <svg class="icon"><use href="#i-code" /></svg> C++ · WebAssembly ·
+          Canvas <span aria-hidden="true">↗</span></button
+        ><span class="footer-edition">EST. 2026 <span>✧</span></span>
+      </footer>
+    </div>
+
+    <dialog id="help-dialog" aria-labelledby="help-title">
+      <button
+        class="dialog-close icon-button"
+        aria-label="Close guide"
+        data-close
+      >
+        <svg class="icon"><use href="#i-close" /></svg>
+      </button>
+      <p class="eyebrow">THE EXPLORER’S GUIDE</p>
+      <h2 id="help-title">How to make it out.</h2>
+      <p>
+        Collect all 5 crystals, then step into the gate in the top-right
+        corner. Your torch lasts 50 successful moves.
+      </p>
+      <ul class="guide-rules">
+        <li>
+          <strong>Move</strong
+          ><span
+            >Arrow keys, W A S D, or the touch pad. No Enter key needed.</span
+          >
+        </li>
+        <li>
+          <strong>Stay alive</strong
+          ><span
+            >Spikes take 2 hearts each time you enter. The potion restores up to
+            3, capped at 5, and is consumed on pickup.</span
+          >
+        </li>
+        <li>
+          <strong>Take a breath</strong
+          ><span
+            >Walls, pauses, and thinking cost nothing. Press Esc or P to pause,
+            R to restart, H for this guide.</span
+          >
+        </li>
+        <li>
+          <strong>Make it count</strong
+          ><span
+            >Escape with 10 points per unused move and 20 per remaining heart.
+            The last torch turn still counts!</span
+          >
+        </li>
+      </ul>
+      <button class="primary-button" data-close autofocus>
+        Got it. Let’s explore. <svg class="icon"><use href="#i-arrow" /></svg>
+      </button>
+    </dialog>
+    <dialog id="pause-dialog" aria-labelledby="pause-title">
+      <p class="eyebrow">PAUSED</p>
+      <h2 id="pause-title">Catch your breath.</h2>
+      <p>
+        Nothing moves while this is open. The torch only burns when you step.
+      </p>
+      <button class="primary-button" id="resume-button" data-close autofocus>
+        Keep exploring <svg class="icon"><use href="#i-arrow" /></svg>
+      </button>
+    </dialog>
+    <dialog id="restart-dialog" aria-labelledby="restart-title">
+      <p class="eyebrow">START OVER</p>
+      <h2 id="restart-title">Back to the entrance?</h2>
+      <p>This run ends here. Your best score is saved.</p>
+      <div class="dialog-actions">
+        <button class="primary-button" id="confirm-restart">
+          Start a new run
+          <svg class="icon"><use href="#i-reset" /></svg></button
+        ><button class="text-button" data-close autofocus>
+          Keep exploring
+        </button>
+      </div>
+    </dialog>
+    <dialog id="about-dialog" aria-labelledby="about-title">
+      <button
+        class="dialog-close icon-button"
+        aria-label="Close about"
+        data-close
+      >
+        <svg class="icon"><use href="#i-close" /></svg>
+      </button>
+      <p class="eyebrow">UNDER THE SURFACE</p>
+      <h2 id="about-title">One engine,<br />two frontends.</h2>
+      <p>
+        Every rule lives in C++17, compiled to WebAssembly: movement,
+        collisions, damage, the torch, and your score. The same engine still
+        runs the original terminal game.
+      </p>
+      <p>
+        The cave artwork is drawn in Canvas 2D. JavaScript handles animation,
+        input, synthesized audio, and your locally saved best score. There is
+        no game framework, no art to download, and no backend.
+      </p>
+      <div class="tech-tags" translate="no">
+        <span>C++17</span><span>WebAssembly</span><span>Canvas 2D</span
+        ><span>Web Audio</span>
+      </div>
+      <a class="primary-button" href="./crystal-cavern-source.zip" download
+        >Read the source <svg class="icon"><use href="#i-code" /></svg
+      ></a>
+    </dialog>
+    <noscript
+      ><p class="noscript">
+        Crystal Cavern needs JavaScript and WebAssembly enabled to play.
+      </p></noscript
+    >
+  </body>
+</html>
