@@ -16,7 +16,7 @@ planning beats exploring.
 ![Tests: 36 passing](https://img.shields.io/badge/tests-36%20passing-2f855a?style=flat-square)
 ![Runtime dependencies: none](https://img.shields.io/badge/runtime%20deps-none-2f855a?style=flat-square)
 
-[Play locally](#play-in-one-command) · [How it works](#under-the-surface) · [Publish to GitHub Pages](#publish-to-github-pages) · [Generation prompt](PROMPT.md)
+[Play it now](https://0xabcd01.github.io/crystal-cavern/) · [Play locally](#play-in-one-command) · [How it works](#under-the-surface) · [Publish to GitHub Pages](#publish-to-github-pages) · [Generation prompt](PROMPT.md)
 
 </div>
 
@@ -33,7 +33,9 @@ when you move. A full run takes a few minutes.
 
 ## Play in one command
 
-From this directory, with Python 3 and Make installed:
+The game is playable at **https://0xabcd01.github.io/crystal-cavern/**.
+
+To serve it yourself, from this directory with Python 3 and Make installed:
 
 ```sh
 make serve
